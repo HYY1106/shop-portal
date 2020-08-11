@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <link href="./js/bootstrap3/css/bootstrap.min.css" rel="stylesheet">
+    <title>登录页面</title>
+</head>
+<body>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <form class="form-horizontal">
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">会员名</label>
+                            <div class="col-sm-4">
+                                <input type="text" class="form-control" id="memberName" placeholder="请输入会员名...">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">密码</label>
+                            <div class="col-sm-4">
+                                <input type="password" class="form-control" id="password" placeholder="请输入密码...">
+                            </div>
+                        </div>
+
+                        <div style="text-align: center">
+                            <button type="button" class="btn btn-primary" onclick="login();"><i class="glyphicon glyphicon-ok"></i>登录</button>
+                            <button type="reset" class="btn btn-default"><i class="glyphicon glyphicon-refresh"></i>重置</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+
+        <script src="./js/jquery-3.3.1.js"></script>
+        <script src="./js/bootstrap3/js/bootstrap.min.js"></script>
+        <script src="./js/bootbox/bootbox.min.js"></script>
+        <script src="./js/jquery.cookie.min.js"></script>
+
+        <script src="./js/jsencrypt.min.js"></script>
+        <script src="./js/key.js"></script>
+
+
+
+<script>
+            function login(){
+                //获取用户名和密码
+                var param = {};
+
+                var encrypt = new JSEncrypt();
+                encrypt.setPublicKey(publicKey);
+
+                //var v_memberName = $("#memberName").val();
+                //var v_password = $("#password").val();
+                //加密
+                var v_memberName = encrypt.encrypt($("#memberName").val());
+                var v_password = encrypt.encrypt($("#password").val());
+
+                param.memberName = v_memberName;
+                param.password = v_password;
+                //做js验证
+
+                //发送ajax请求,进行登录
+                $.ajax({
+                    type:"post",
+                    url:"http://localhost:8082/api/member/login",
+                    data:param,
+                    success:function (result) {
+                        if (result.code == 200){
+                            //登录成功,跳转首页
+                            $.cookie("fh-token",result.data);
+                           location.href="/";
+                        }else{
+                            alert(result.msg);
+                        }
+                    }
+                })
+            }
+
+</script>
+</body>
+</html>
